@@ -165,13 +165,12 @@
   document.getElementById('testGoogleButton').onclick = function() {
     fetch('https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        squareNumber: 1,
-        displayName: 'TEST CLAIM',
-        doubleDown: false,
-        payment: 'Venmo'
-      })
+body: new URLSearchParams({
+  squareNumber: '1',
+  displayName: 'TEST CLAIM',
+  doubleDown: 'false',
+  payment: 'Venmo'
+})
     })
     .then(response => response.json())
     .then(data => {
