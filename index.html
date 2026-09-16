@@ -158,20 +158,30 @@
     });
 </script>
 <button id="testGoogleButton" style="margin:30px; padding:15px; font-weight:bold;">
-  TEST GOOGLE CONNECTION
+  TEST REAL CLAIM #1
 </button>
 
 <script>
   document.getElementById('testGoogleButton').onclick = function() {
     fetch('https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec', {
-      method: 'POST'
+      method: 'POST',
+      body: JSON.stringify({
+        squareNumber: 1,
+        displayName: 'TEST CLAIM',
+        doubleDown: false,
+        payment: 'Venmo'
+      })
     })
     .then(response => response.json())
     .then(data => {
-      alert(data.message);
+      if (data.success) {
+        alert('SUCCESS! Square #1 was claimed.');
+      } else {
+        alert('CLAIM FAILED: ' + data.message);
+      }
     })
     .catch(error => {
-      alert('Google connection FAILED');
+      alert('CONNECTION FAILED');
       console.error(error);
     });
   };
