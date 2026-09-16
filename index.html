@@ -119,22 +119,44 @@
 
   <div id="squares"></div>
 
-  <script>
-    const container = document.getElementById('squares');
+ <script>
+  const container = document.getElementById('squares');
 
-    for (let number = 1; number <= 31; number++) {
-      const square = document.createElement('button');
+  const apiUrl =
+    'https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec?api=squares';
 
-      square.innerHTML =
-        `<strong>${number}</strong><br>$${number}`;
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(item => {
+        const square = document.createElement('button');
 
-      square.onclick = function() {
-        alert(`You picked #${number}!`);
-      };
+        if (item.status === 'Claimed') {
+          square.innerHTML =
+            `<strong>${item.square}</strong><br>${item.name}<br>` +
+            (item.doubleDown === 'Yes'
+              ? `💛 $${item.amount} DOUBLED THE LOVE`
+              : `$${item.amount} DONATED`);
 
-      container.appendChild(square);
-    }
-  </script>
+          square.disabled = true;
+        } else {
+          square.innerHTML =
+            `<strong>${item.square}</strong><br>$${item.amount}`;
+
+          square.onclick = function() {
+            alert(`You picked #${item.square}!`);
+          };
+        }
+
+        container.appendChild(square);
+      });
+    })
+    .catch(error => {
+      container.innerHTML =
+        '<p>Calendar data could not be loaded.</p>';
+      console.error(error);
+    });
+</script>
 
 </body>
 </html>
