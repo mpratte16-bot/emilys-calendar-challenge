@@ -1,7 +1,140 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Emily's Calendar Challenge</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px 50px;
+      background: #080808;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+    }
+
+    .hero {
+      max-width: 720px;
+      margin: 0 auto 28px;
+    }
+
+    .team-name {
+      color: #d4af37;
+      font-size: clamp(15px, 4vw, 20px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(58px, 16vw, 100px);
+      font-weight: 900;
+      line-height: .9;
+      letter-spacing: -2px;
+    }
+
+    .challenge {
+      margin-top: 10px;
+      color: #d4af37;
+      font-size: clamp(19px, 5vw, 30px);
+      font-weight: 900;
+    }
+
+    .instructions {
+      margin: 22px 0 7px;
+      font-size: clamp(16px, 4vw, 20px);
+      font-weight: 800;
+    }
+
+    .double-down {
+      display: inline-block;
+      padding: 8px 13px;
+      border: 1px solid #d4af37;
+      border-radius: 999px;
+      color: #d4af37;
+      font-size: clamp(11px, 3vw, 14px);
+      font-weight: 800;
+    }
+
+    #squares {
+      width: 100%;
+      max-width: 720px;
+      margin: 28px auto 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    #squares button {
+      min-height: 92px;
+      padding: 10px 4px;
+      border: 2px solid #d4af37;
+      border-radius: 10px;
+      background: #151515;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    #squares button strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #d4af37;
+      font-size: clamp(25px, 6vw, 36px);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 10px 40px;
+      }
+
+      #squares {
+        gap: 7px;
+      }
+
+      #squares button {
+        min-height: 82px;
+      }
+    }
+  </style>
+</head>
+
 <body>
-  <h1>HELLO FACEBOOK, CAN YOU SEE THIS SHIT? 😂</h1>
-  <p>If you can read this inside Facebook, Wine-Marie wins round one. 🍷🥎</p>
+
+  <div class="hero">
+    <div class="team-name">GLADIATORS SOFTBALL</div>
+    <h1>BACK #8</h1>
+    <div class="challenge">EMILY'S CALENDAR CHALLENGE</div>
+    <p class="instructions">PICK YOUR NUMBER • $1–$31</p>
+    <div class="double-down">
+      ⭐ DOUBLE DOWN TO DOUBLE THE LOVE
+    </div>
+  </div>
+
+  <div id="squares"></div>
+
+  <script>
+    const container = document.getElementById('squares');
+
+    for (let number = 1; number <= 31; number++) {
+      const square = document.createElement('button');
+
+      square.innerHTML =
+        `<strong>${number}</strong><br>$${number}`;
+
+      square.onclick = function() {
+        alert(`You picked #${number}!`);
+      };
+
+      container.appendChild(square);
+    }
+  </script>
+
 </body>
 </html>
