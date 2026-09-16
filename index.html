@@ -157,6 +157,24 @@
       console.error(error);
     });
 </script>
+<button id="testGoogleButton" style="margin:30px; padding:15px; font-weight:bold;">
+  TEST GOOGLE CONNECTION
+</button>
 
+<script>
+  document.getElementById('testGoogleButton').onclick = function() {
+    fetch('https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec', {
+      method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert(data.message);
+    })
+    .catch(error => {
+      alert('Google connection FAILED');
+      console.error(error);
+    });
+  };
+</script>
 </body>
 </html>
