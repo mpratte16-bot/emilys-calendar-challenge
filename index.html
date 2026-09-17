@@ -102,6 +102,195 @@
         min-height: 82px;
       }
     }
+    .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, .88);
+  padding: 20px;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 24px 26px;
+  background: #151515;
+  border: 2px solid #d4af37;
+  border-radius: 18px;
+  color: #ffffff;
+  text-align: left;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .6);
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  color: #d4af37;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.modal-kicker {
+  color: #d4af37;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+.modal-card h2 {
+  margin: 8px 0 4px;
+  color: #ffffff;
+  font-size: 34px;
+  text-align: center;
+}
+
+.modal-amount {
+  margin-bottom: 24px;
+  color: #d4af37;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.modal-card label,
+.modal-label {
+  display: block;
+  margin: 18px 0 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+#displayName {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background: #080808;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.support-options,
+.payment-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.support-options button,
+.payment-options button {
+  padding: 12px 8px;
+  border: 1px solid #d4af37;
+  border-radius: 8px;
+  background: #080808;
+  color: #d4af37;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.support-options button.selected,
+.payment-options button.selected {
+  background: #d4af37;
+  color: #080808;
+}
+
+.claim-button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #d4af37;
+  color: #080808;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.success-screen {
+  display: none;
+  text-align: center;
+}
+
+.success-screen.show {
+  display: block;
+}
+
+.success-ball {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.success-screen h2 {
+  margin: 8px 0 16px;
+  color: #ffffff;
+  font-size: clamp(28px, 7vw, 38px);
+  font-weight: 900;
+}
+
+.success-square {
+  color: #d4af37;
+  font-size: clamp(28px, 7vw, 40px);
+  font-weight: 900;
+}
+
+.success-amount {
+  margin: 5px 0 24px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.payment-card {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #d4af37;
+  border-radius: 12px;
+  background: #080808;
+}
+
+.payment-title {
+  color: #d4af37;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.payment-info {
+  margin-top: 10px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.success-thanks {
+  margin: 24px 0 4px;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 1px;
+}
+
+.success-thanks strong {
+  color: #d4af37;
+  font-size: 18px;
+}
   </style>
 </head>
 
@@ -121,7 +310,9 @@
 
  <script>
   const container = document.getElementById('squares');
-
+let selectedItem = null;
+let selectedDoubleDown = false;
+let selectedPayment = '';
   const apiUrl =
     'https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec?api=squares';
 
@@ -143,9 +334,29 @@
           square.innerHTML =
             `<strong>${item.square}</strong><br>$${item.amount}`;
 
-          square.onclick = function() {
-            alert(`You picked #${item.square}!`);
-          };
+         square.onclick = function() {
+  selectedItem = item;
+  selectedDoubleDown = false;
+  selectedPayment = '';
+
+  document.getElementById('modalTitle').textContent =
+    `YOU PICKED #${item.square}`;
+
+  document.getElementById('modalAmount').textContent =
+    `$${item.amount} DONATION`;
+
+  document.getElementById('displayName').value = '';
+
+  document.getElementById('regularOption').classList.add('selected');
+  document.getElementById('doubleOption').classList.remove('selected');
+  document.getElementById('venmoOption').classList.remove('selected');
+  document.getElementById('zelleOption').classList.remove('selected');
+document.getElementById('claimButton').disabled = false;
+  document.getElementById('claimButton').textContent =
+    `CLAIM #${item.square} — $${item.amount}`;
+
+  document.getElementById('claimModal').classList.add('show');
+};
         }
 
         container.appendChild(square);
@@ -157,34 +368,271 @@
       console.error(error);
     });
 </script>
-<button id="testGoogleButton" style="margin:30px; padding:15px; font-weight:bold;">
-  TEST REAL CLAIM #1
+<div id="claimModal" class="modal">
+  <div class="modal-card">
+    <div id="claimFormContent">
+    <button class="close-modal" onclick="closeClaimForm()">×</button>
+
+    <div class="modal-kicker">GLADIATORS SOFTBALL</div>
+    <h2 id="modalTitle">YOU PICKED #8</h2>
+    <div id="modalAmount" class="modal-amount">$8 DONATION</div>
+
+    <label for="displayName">What should we put on your square?</label>
+    <input id="displayName" type="text" placeholder="Your name, family name, nickname...">
+
+    <div class="modal-label">Choose your support level</div>
+    <div class="support-options">
+      <button id="regularOption" type="button">REGULAR</button>
+      <button id="doubleOption" type="button">⭐ DOUBLE DOWN</button>
+    </div>
+
+    <div class="modal-label">How will you pay?</div>
+    <div class="payment-options">
+      <button id="venmoOption" type="button">VENMO</button>
+      <button id="zelleOption" type="button">ZELLE</button>
+    </div>
+
+    <button id="claimButton" class="claim-button" type="button">
+      CLAIM MY SQUARE
+    </button>
+    </div>
+  <div id="successScreen" class="success-screen">
+  <div class="success-ball">🥎</div>
+  <div class="modal-kicker">GLADIATORS SOFTBALL</div>
+
+  <h2>YOU'RE ON THE BOARD!</h2>
+
+  <div id="successSquare" class="success-square">#8 IS YOURS</div>
+  <div id="successAmount" class="success-amount">$8 DONATION</div>
+
+  <div class="payment-card">
+    <div id="successPaymentTitle" class="payment-title">PAY WITH VENMO</div>
+    <div id="successPaymentInfo" class="payment-info">@Marie_Pratte</div>
+<button id="paymentActionButton" class="claim-button" type="button">
+  OPEN VENMO
 </button>
+  </div>
+  <div class="success-thanks">
+    THANK YOU FOR SUPPORTING<br>
+    <strong>EMILY #8 🥎</strong>
+  </div>
+
+  <button id="doneButton" class="claim-button" type="button">
+    DONE
+  </button>
+</div>
+</div>
+</div>
 
 <script>
-  document.getElementById('testGoogleButton').onclick = function() {
-    fetch('https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec', {
-      method: 'POST',
-body: new URLSearchParams({
-  squareNumber: '1',
-  displayName: 'TEST CLAIM',
-  doubleDown: 'false',
-  payment: 'Venmo'
-})
+  function closeClaimForm() {
+  document.getElementById('claimModal').classList.remove('show');
+}
+
+document.getElementById('regularOption').onclick = function() {
+  selectedDoubleDown = false;
+
+  this.classList.add('selected');
+  document.getElementById('doubleOption').classList.remove('selected');
+
+  document.getElementById('modalAmount').textContent =
+    `$${selectedItem.amount} DONATION`;
+
+  document.getElementById('claimButton').textContent =
+    `CLAIM #${selectedItem.square} — $${selectedItem.amount}`;
+};
+
+document.getElementById('doubleOption').onclick = function() {
+  selectedDoubleDown = true;
+
+  this.classList.add('selected');
+  document.getElementById('regularOption').classList.remove('selected');
+
+  const doubledAmount = Number(selectedItem.square) * 2;
+
+  document.getElementById('modalAmount').textContent =
+    `$${doubledAmount} DONATION`;
+
+  document.getElementById('claimButton').textContent =
+    `CLAIM #${selectedItem.square} — $${doubledAmount}`;
+};
+
+document.getElementById('venmoOption').onclick = function() {
+  selectedPayment = 'Venmo';
+
+  this.classList.add('selected');
+  document.getElementById('zelleOption').classList.remove('selected');
+};
+
+document.getElementById('zelleOption').onclick = function() {
+  selectedPayment = 'Zelle';
+
+  this.classList.add('selected');
+  document.getElementById('venmoOption').classList.remove('selected');
+};
+
+  document.getElementById('claimButton').onclick = function() {
+  const name = document.getElementById('displayName').value.trim();
+
+  if (!name) {
+    alert('Please enter a name for your square.');
+    return;
+  }
+
+  if (!selectedPayment) {
+    alert('Please choose Venmo or Zelle.');
+    return;
+  }
+
+  const finalAmount = selectedDoubleDown
+    ? Number(selectedItem.square) * 2
+    : Number(selectedItem.square);
+
+  const claimButton = this;
+  claimButton.disabled = true;
+  claimButton.textContent = 'CLAIMING...';
+
+  const postUrl =
+    'https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec';
+
+  fetch(postUrl, {
+    method: 'POST',
+    body: new URLSearchParams({
+      squareNumber: String(selectedItem.square),
+      displayName: name,
+      doubleDown: String(selectedDoubleDown),
+      payment: selectedPayment
     })
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      const paymentInfo = selectedPayment === 'Zelle'
+        ? '775-351-3866\nor mpratte16@gmail.com'
+        : '@Marie_Pratte';
+
+      document.getElementById('claimFormContent').style.display = 'none';
+
+      document.getElementById('successSquare').textContent =
+        `#${selectedItem.square} IS YOURS`;
+
+      document.getElementById('successAmount').textContent =
+        `$${finalAmount} DONATION`;
+
+      document.getElementById('successPaymentTitle').textContent =
+        `PAY WITH ${selectedPayment.toUpperCase()}`;
+
+      document.getElementById('successPaymentInfo').textContent =
+        paymentInfo;
+
+      const paymentButton =
+        document.getElementById('paymentActionButton');
+
+      if (selectedPayment === 'Venmo') {
+        paymentButton.textContent = 'OPEN VENMO';
+        paymentButton.onclick = function() {
+          window.open('https://venmo.com/Marie_Pratte', '_blank');
+        };
+      } else {
+        paymentButton.textContent = 'COPY ZELLE INFO';
+        paymentButton.onclick = function() {
+          navigator.clipboard.writeText(
+            '775-351-3866 or mpratte16@gmail.com'
+          );
+          paymentButton.textContent = 'ZELLE INFO COPIED!';
+        };
+      }
+
+      document.getElementById('successScreen').classList.add('show');
+
+    } else {
+      alert(result.message);
+      claimButton.disabled = false;
+      claimButton.textContent =
+        `CLAIM #${selectedItem.square} — $${finalAmount}`;
+    }
+  })
+  .catch(error => {
+    alert('Something went wrong. Please try again.');
+    claimButton.disabled = false;
+    claimButton.textContent =
+      `CLAIM #${selectedItem.square} — $${finalAmount}`;
+    console.error(error);
+  });
+};
+  document.getElementById('doneButton').onclick = function() {
+  document.getElementById('claimModal').classList.remove('show');
+  document.getElementById('successScreen').classList.remove('show');
+  document.getElementById('claimFormContent').style.display = 'block';
+
+  selectedItem = null;
+  selectedDoubleDown = false;
+  selectedPayment = '';
+
+  document.getElementById('displayName').value = '';
+  document.getElementById('regularOption').classList.remove('selected');
+  document.getElementById('doubleOption').classList.remove('selected');
+  document.getElementById('venmoOption').classList.remove('selected');
+  document.getElementById('zelleOption').classList.remove('selected');
+
+  document.getElementById('claimButton').disabled = false;
+  document.getElementById('claimButton').textContent = 'CLAIM MY SQUARE';
+
+  container.innerHTML = '';
+
+  fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
-      if (data.success) {
-        alert('SUCCESS! Square #1 was claimed.');
-      } else {
-        alert('CLAIM FAILED: ' + data.message);
-      }
+      data.forEach(item => {
+        const square = document.createElement('button');
+
+        if (item.status === 'Claimed') {
+          square.innerHTML =
+            `<strong>${item.square}</strong><br>${item.name}<br>` +
+            (item.doubleDown === 'Yes'
+              ? `💛 $${item.amount} DOUBLED THE LOVE`
+              : `$${item.amount} DONATED`);
+
+          square.disabled = true;
+        } else {
+          square.innerHTML =
+            `<strong>${item.square}</strong><br>$${item.amount}`;
+
+          square.onclick = function() {
+            selectedItem = item;
+            selectedDoubleDown = false;
+            selectedPayment = '';
+
+            document.getElementById('modalTitle').textContent =
+              `YOU PICKED #${item.square}`;
+
+            document.getElementById('modalAmount').textContent =
+              `$${item.amount} DONATION`;
+
+            document.getElementById('displayName').value = '';
+
+            document.getElementById('regularOption').classList.add('selected');
+            document.getElementById('doubleOption').classList.remove('selected');
+            document.getElementById('venmoOption').classList.remove('selected');
+            document.getElementById('zelleOption').classList.remove('selected');
+
+            document.getElementById('claimButton').textContent =
+              `CLAIM #${item.square} — $${item.amount}`;
+
+            document.getElementById('claimModal').classList.add('show');
+          };
+        }
+
+        container.appendChild(square);
+      });
     })
     .catch(error => {
-      alert('CONNECTION FAILED');
+      container.innerHTML =
+        '<p>Calendar data could not be loaded.</p>';
       console.error(error);
     });
-  };
+};
 </script>
+  
 </body>
 </html>
