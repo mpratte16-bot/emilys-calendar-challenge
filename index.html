@@ -315,8 +315,8 @@ let selectedDoubleDown = false;
 let selectedPayment = '';
   const apiUrl =
     'https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec?api=squares';
-
-  fetch(apiUrl)
+const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
+fetch(proxyUrl)
     .then(response => response.json())
     .then(data => {
       data.forEach(item => {
