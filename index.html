@@ -315,8 +315,40 @@ let selectedDoubleDown = false;
 let selectedPayment = '';
   const apiUrl =
     'https://script.google.com/macros/s/AKfycbx8OFtjBCABzZoHVX0UzGkeztl37JSaJ_Q8xhfRJNPzjHy5hG5WPnxVMVlw8FMiNvs/exec?api=squares';
-const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
-fetch(proxyUrl)
+const fallbackSquares = [
+  {square:1,  name:'', amount:1,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:2,  name:'', amount:2,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:3,  name:'', amount:3,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:4,  name:'', amount:4,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:5,  name:'', amount:5,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:6,  name:'', amount:6,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:7,  name:'', amount:7,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:8,  name:'', amount:8,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:9,  name:'', amount:9,  doubleDown:'',    payment:'',      status:'Available'},
+  {square:10, name:'', amount:10, doubleDown:'',    payment:'',      status:'Available'},
+  {square:11, name:'', amount:11, doubleDown:'',    payment:'',      status:'Available'},
+  {square:12, name:'', amount:12, doubleDown:'',    payment:'',      status:'Available'},
+  {square:13, name:'Auntie Brooke', amount:26, doubleDown:'Yes', payment:'Venmo', status:'Claimed'},
+  {square:14, name:'', amount:14, doubleDown:'',    payment:'',      status:'Available'},
+  {square:15, name:'', amount:15, doubleDown:'',    payment:'',      status:'Available'},
+  {square:16, name:'Bethany', amount:16, doubleDown:'No', payment:'Zelle', status:'Claimed'},
+  {square:17, name:'', amount:17, doubleDown:'',    payment:'',      status:'Available'},
+  {square:18, name:'', amount:18, doubleDown:'',    payment:'',      status:'Available'},
+  {square:19, name:'', amount:19, doubleDown:'',    payment:'',      status:'Available'},
+  {square:20, name:'Coach Phil', amount:20, doubleDown:'No', payment:'Zelle', status:'Claimed'},
+  {square:21, name:'', amount:21, doubleDown:'',    payment:'',      status:'Available'},
+  {square:22, name:'', amount:22, doubleDown:'',    payment:'',      status:'Available'},
+  {square:23, name:'Coach Phil', amount:23, doubleDown:'No', payment:'Zelle', status:'Claimed'},
+  {square:24, name:'', amount:24, doubleDown:'',    payment:'',      status:'Available'},
+  {square:25, name:'Grammie', amount:25, doubleDown:'No', payment:'Zelle', status:'Claimed'},
+  {square:26, name:'', amount:26, doubleDown:'',    payment:'',      status:'Available'},
+  {square:27, name:'', amount:27, doubleDown:'',    payment:'',      status:'Available'},
+  {square:28, name:'', amount:28, doubleDown:'',    payment:'',      status:'Available'},
+  {square:29, name:'', amount:29, doubleDown:'',    payment:'',      status:'Available'},
+  {square:30, name:'', amount:30, doubleDown:'',    payment:'',      status:'Available'},
+  {square:31, name:'Darlene Herman', amount:62, doubleDown:'Yes', payment:'Venmo', status:'Claimed'}
+];
+   fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
       data.forEach(item => {
@@ -362,11 +394,53 @@ document.getElementById('claimButton').disabled = false;
         container.appendChild(square);
       });
     })
-    .catch(error => {
-      container.innerHTML =
-        '<p>Calendar data could not be loaded.</p>';
-      console.error(error);
-    });
+   .catch(error => {
+  console.error('Live calendar data could not be loaded. Using fallback.', error);
+
+  fallbackSquares.forEach(item => {
+    const square = document.createElement('button');
+
+    if (item.status === 'Claimed') {
+      square.innerHTML =
+        `<strong>${item.square}</strong><br>${item.name}<br>` +
+        (item.doubleDown === 'Yes'
+          ? `💛 $${item.amount} DOUBLED THE LOVE`
+          : `$${item.amount} DONATED`);
+
+      square.disabled = true;
+    } else {
+      square.innerHTML =
+        `<strong>${item.square}</strong><br>$${item.amount}`;
+
+      square.onclick = function() {
+        selectedItem = item;
+        selectedDoubleDown = false;
+        selectedPayment = '';
+
+        document.getElementById('modalTitle').textContent =
+          `YOU PICKED #${item.square}`;
+
+        document.getElementById('modalAmount').textContent =
+          `$${item.amount} DONATION`;
+
+        document.getElementById('displayName').value = '';
+
+        document.getElementById('regularOption').classList.add('selected');
+        document.getElementById('doubleOption').classList.remove('selected');
+        document.getElementById('venmoOption').classList.remove('selected');
+        document.getElementById('zelleOption').classList.remove('selected');
+
+        document.getElementById('claimButton').disabled = false;
+        document.getElementById('claimButton').textContent =
+          `CLAIM #${item.square} — $${item.amount}`;
+
+        document.getElementById('claimModal').classList.add('show');
+      };
+    }
+
+    container.appendChild(square);
+  });
+});
 </script>
 <div id="claimModal" class="modal">
   <div class="modal-card">
@@ -578,11 +652,11 @@ document.getElementById('zelleOption').onclick = function() {
   document.getElementById('claimButton').disabled = false;
   document.getElementById('claimButton').textContent = 'CLAIM MY SQUARE';
 
-  container.innerHTML = '';
-
   fetch(apiUrl)
     .then(response => response.json())
     .then(data => {
+      container.innerHTML = '';
+      
       data.forEach(item => {
         const square = document.createElement('button');
 
@@ -626,11 +700,9 @@ document.getElementById('zelleOption').onclick = function() {
         container.appendChild(square);
       });
     })
-    .catch(error => {
-      container.innerHTML =
-        '<p>Calendar data could not be loaded.</p>';
-      console.error(error);
-    });
+.catch(error => {
+  console.error('Live calendar refresh failed. Keeping current calendar.', error);
+});
 };
 </script>
   
